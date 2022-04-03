@@ -1,10 +1,13 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * CISC 380
  * Algorithms Assignment 4
  * 
  * Implements dynamic programming solutions to see if a subset adds up to a value.
  * 
- * @author YOUR NAME HERE
+ * @author Jonathan Benusa
  * Due Date: xx/xx/xx
  */
 
@@ -12,8 +15,13 @@
 
 public class DynamicSum{
 
+    private Boolean [][] table;
+    private int sum;
+
     public DynamicSum(){
         //YOUR CODE HERE
+        table = null;
+
     }//constructor
 
     /**
@@ -26,6 +34,27 @@ public class DynamicSum{
      */
     public boolean isSum(int[] arr, int t){
         //YOUR CODE HERE
+        Arrays.sort(arr);
+        ArrayList sums = new ArrayList<Integer>();      //sums will hold all previous calculated sums
+
+        for(int currentValue:arr){
+            if(currentValue == t){                      //if the current value from the array is i
+                return true;
+            } else {
+                int sumsSize = sums.size();             //the size of sums before looking at this current index
+                //add the current index's value to all previous additions and check if the summation is equal to t
+                for (int i=0; i<sums.size(); i++) {
+                    Integer a = (Integer) sums.get(i);
+                    Integer curSum = a+currentValue;
+                    if((curSum).equals(t)) {
+                        return true;
+                    }else {
+                        sums.add(curSum);               //if not add this sum to the list of previous sums
+                    }
+                }
+                sums.add(currentValue);
+            }
+        }
 
         return false;
     }//isSum
@@ -40,6 +69,7 @@ public class DynamicSum{
      */
     public boolean isSumMem(int[] arr, int t ){
         //YOUR CODE HERE
+        table = new Boolean[arr.length][arr.length];
         
         return false;
     }//isSumMem
