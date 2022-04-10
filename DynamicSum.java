@@ -24,6 +24,8 @@ public class DynamicSum{
 
     /**
      *Checks to see if a subset of arr adds up to exactly t with an iterative solution.
+     *
+     * Will have n loops where each loop will at worst do (t-1)^2 work. giving it a runtime of O(n*t^2)
 	 *
      * @param arr the array of integers to take subsets from.
      * @param t   the value the subset could add up to.
@@ -37,23 +39,23 @@ public class DynamicSum{
 
         sums[0][0] = arr[0];
 
-        for(int i=1; i<arr.length; i++) {
+        for(int i=1; i<arr.length; i++) {           //takes n repetitions
             index=0;
             if(arr[i]==t) {
                 return true;
             }else if(arr[i]<t){
-                for(int sum:sums[i-1]) {
+                for(int sum:sums[i-1]) {            //repeates for at worst t-1 times
                     int num=sum+arr[i];
                     if(num==t) {
                         return true;
                     }
-                    if(num<t && !Arrays.stream(sums[i]).anyMatch(x -> x == num)) {
+                    if(num<t && !Arrays.stream(sums[i]).anyMatch(x -> x == num)) {      //these checks take at worst t-1
                         sums[i][index] = num;
                         index++;
                     }
                 }
                 int I = arr[i];
-                if(!Arrays.stream(sums[i]).anyMatch(x -> x == I)) {
+                if(!Arrays.stream(sums[i]).anyMatch(x -> x == I)) {         //t-1
                     sums[i][index] = I;
                     index++;
                 }
@@ -107,7 +109,7 @@ public class DynamicSum{
             }
             if(table[i-1][j]==null) {               // if this row of the table has not been filled yet
                 if(isSumPriv(arr, t, i-1, 0)==true) {       //if the previous row returns true then set this row to true and return true
-                    table[i][j] = new BoolInt(true);
+                    table[i][j] = new BoolInt(-1,true);
                     return true;
                 }else {
                     //runs t times
@@ -144,6 +146,9 @@ public class DynamicSum{
 
     /**
      * Recovers the subset of arr that adds up to t, if it exists.
+     *
+     * if the table is filled this method will recover the solution in at worst O(n*t).
+     * if the table is not filled it will run in O(n*t^2) like the above function.
 	 *
      * @param arr the array of integers to take subsets from.
      * @param t   the value the subset could add up to.
@@ -152,6 +157,33 @@ public class DynamicSum{
      */
     public int[] getSubset(int[] arr, int t){
         //YOUR CODE HERE
+        boolean isTrue = isSumMem(arr, t);
+        int currentSum = t;
+        int index = 0;
+        int[] solution = new int[0];
+
+        if(isTrue) {
+            for(int i=arr.length-1; i>=0; i--) {
+                for (int j = 0; j <= t; j++) {
+                    if (table[i][j] != null) {
+                        if (table[i][j].getNum() != -1 && table[i][j].getIsTrue()) {
+                            solution = new int[i+1];
+                            currentSum = currentSum - arr[i];
+                            solution[index] = arr[i];
+                            index++;
+                        }
+                        if(table[i][j].getNum()==currentSum && solution!=null) {
+                            currentSum = currentSum - arr[i];
+                            solution[index] = arr[i];
+                            index++;
+                        }
+                        if (currentSum <= 0) {
+                            return solution;
+                        }
+                    }
+                }
+            }
+        }
 
         return null;
     }//getSubset
